@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<h1 class="text-center">Draft Lists!</h1>
+
+{% if not session["USER_ID"] %}
+
+<p class="text-center fs-3"><a href="/register" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Register</a></p>
+
+{% endif %}
+
+{% endblock %}

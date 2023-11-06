@@ -1,0 +1,21 @@
+{% extends "base.html" %} 
+{% block title %}profile{% endblock %} 
+
+{% block content %}
+<h1 class="text-center display-2">{{user.first_name}}'s Lists</h1>
+{% if user.lists %}
+<div class="row">
+  {% for list in lists %}
+  <div class="col-6">
+    <div class="card" style="width: 18rem">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">An item</li>
+        <li class="list-group-item">A second item</li>
+        <li class="list-group-item">A third item</li>
+      </ul>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %} 
+{% endblock %}
