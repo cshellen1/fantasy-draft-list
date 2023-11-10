@@ -1,0 +1,18 @@
+{% extends "base.html" %} {% block title %}players{% endblock %} {% block
+content %}
+
+<h1 class="diplay-1">Player Comparison</h1>
+<form class="d-flex" role="search" id="add-player-form">
+  <input
+    class="form-control me-2"
+    type="search"
+    placeholder="Add Player"
+    id="player" />
+  <button class="btn btn-outline-success">Add</button>
+</form>
+<br />
+<div class="row justify-content-center" id="player-cards">
+  <!-- Player cards for comparison will go here  -->
+</div>
+
+{% endblock %}

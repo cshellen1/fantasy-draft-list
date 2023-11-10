@@ -1,0 +1,28 @@
+{% extends "base.html" %} 
+{% block title %}players{% endblock %} 
+
+{% block content %}
+
+<div class="row align content-center">
+    <div class="col col-6">
+        <div class="card" style="width: 18rem;">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">{{resp['results'][0]
+              ['player_name']}} {{resp['results'][0]
+              ['team']}}</li>
+              <li class="list-group-item"> Season: {{resp['results'][0]
+              ['season']}}</li>
+              <li class="list-group-item"> Total Points: {{resp['results'][0]
+              ['PTS']}}</li>
+              <li class="list-group-item"> Field Goal %: {{resp['results'][0]['field_percent']}}</li>
+              <li class="list-group-item"> Three point %: {{resp['results'][0]['three_percent']}}</li>
+              <li class="list-group-item"> Blocks: {{resp['results'][0]
+              ['BLK']}}</li>
+              <li class="list-group-item"> Assists: {{resp['results'][0]
+              ['AST']}}</li>
+            </ul>
+          </div>
+    </div>
+</div>
+
+{% endblock %}

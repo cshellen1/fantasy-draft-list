@@ -74,10 +74,10 @@ class List(db.Model):
     __tablename__ = "lists"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    pg = db.Column(db.String(50), nullable=False)
-    sg = db.Column(db.String(50), nullable=False)
-    sf = db.Column(db.String(50), nullable=False)
-    pf = db.Column(db.String(50), nullable=False)
-    c = db.Column(db.String(50), nullable=False)
+    pg = db.Column(db.String(50), default="point guard")
+    sg = db.Column(db.String(50), default="shooting guard")
+    sf = db.Column(db.String(50), default="strong forward")
+    pf = db.Column(db.String(50), default="power forward")
+    c = db.Column(db.String(50), default="center")
     
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))

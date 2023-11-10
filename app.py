@@ -1,10 +1,10 @@
 """Draft List application."""
-
+import requests
 import pdb
 from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, List
-from forms import RegisterForm
+from forms import RegisterForm, LoginForm
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///fantasy-draft-listdb'
@@ -18,6 +18,12 @@ debug = DebugToolbarExtension(app)
 connect_db(app)
 
 
+def run_login(user):
+    """Login a user by saving the username and id to the session"""
+    
+    session["USER_ID"] = user.id
+    session["USERNAME"] = user.username
+
 
 # @app.before_request
 # def add_user_to_g():
@@ -29,13 +35,15 @@ connect_db(app)
 #     else:
         # g.user = None
 
+####################### general user routes ###########################
+
 @app.route("/")
 def show_home():
     """Shows home page"""
     
     return render_template("home.html")
 
-@app.route('/users/register', methods=["POST", "GET"])
+@app.route('/register', methods=["POST", "GET"])
 def register_new_user():
     """Show registration form and handle creating new user instance and store in database"""
     
@@ -57,38 +65,86 @@ def register_new_user():
         db.session.add(new_user)
         db.session.commit()
         
-        session["USER_ID"] = new_user.id
-        session["USERNAME"] = new_user.username
+        run_login(new_user)
         
-        return redirect(f"/users/{new_user.id}")
+        return redirect(f"/user-detail/{new_user.id}")
     
     return render_template('register.html', form=form)
 
-@app.route("/users/detail/<int:id>")
+@app.route("/user-detail/<int:id>")
 def show_user_profile(id):
     """If user logged in shows user profile with all user details."""
     
-    if session["CURR_USER"]:
+    if not session.get("USER_ID", None) == None:
         user = User.query.get_or_404(id)
         
         return render_template("user-profile.html", user=user)
         
     else:
+        flash("Invalid Credentials", "danger")
         return redirect("/")   
     
-@app.route("/users/logout")
+@app.route("/logout")
 def logout():
     """If user logged in logout user by removing user info from session."""
     
     session.pop("USERNAME")
     session.pop("USER_ID")
-    session.pop("CURR_USER")
     
     return redirect("/")
 
-# @app.route("/users/login")
-# def login():
-#     """If given valid credentials login user by adding user ingo to session."""
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """If given valid credentials login user by adding user ingo to session."""
     
+    form = LoginForm()
     
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        user = User.authenticate(username, password)
+        
+        if user:
+            flash(f"Welcome back {user.first_name}!", "success")
+            run_login(user)
+            
+            return redirect(f"/user-detail/{user.id}")
     
+        else:
+            flash("Invalid Username/Password", "danger")
+        
+            return redirect("/login")
+        
+    return render_template("login.html", form=form)
+
+################## player search and comparison routes #########################
+
+@app.route("/player-details")
+def show_player_search_details():
+    """Handle user search for a specific player and display player stats"""
+    
+    if request.args.get("q"):
+    
+        player_search = request.args.get("q")
+        
+        r = requests.get(f"https://nba-stats-db.herokuapp.com/api/playerdata/name/{player_search}")
+        resp = r.json()
+        if resp['count'] == 0:
+            flash("No data for player. Check spelling.", "danger")
+            
+            return redirect('/player-details')
+        # pdb.set_trace()
+    
+        return render_template("players.html", resp=resp)
+    
+    else:
+        r = requests.get("https://nba-stats-db.herokuapp.com/api/playerdata/season/2023")
+        resp = r.json()
+        
+        return render_template("players.html", resp=resp)
+        
+@app.route("/comparison")
+def compare_players():
+    """Show page for comparing player statistics and add player to user draft list."""
+    
+    return render_template("compare.html")
