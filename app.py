@@ -1,15 +1,19 @@
 """Draft List application."""
-import requests
+import requests, random
 import pdb
 from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, List
+from models import db, connect_db, User, List, PlayerList, Player
 from forms import RegisterForm, LoginForm
+from sqlalchemy.sql.functions import ReturnTypeFromArgs
+ 
+class unaccent(ReturnTypeFromArgs):
+    pass
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///fantasy-draft-listdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = False
 app.config['SECRET_KEY'] = "iliketrucks12345"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
@@ -23,17 +27,40 @@ def run_login(user):
     
     session["USER_ID"] = user.id
     session["USERNAME"] = user.username
-
-
-# @app.before_request
-# def add_user_to_g():
-#     """If user logged in, add curr user to Flask global."""
-
-#     if CURR_USER in session:
-#         g.user = User.query.get(session[CURR_USER])
-
-#     else:
-        # g.user = None
+    
+def make_dbplayers(players):
+    """Create instances of Player to store in the table players"""
+    
+    for player in players:
+        dbplayer = Player(
+            name=player['player_name'], 
+            team=player['team'],
+            points=player['PTS'],
+            assists=player['AST'],
+            blocks=player['BLK'],
+            field_goal_percent=player['field_percent'],
+            three_percent=player['three_percent'],
+            minutes_played=player['minutes_played'])
+        
+        db.session.add(dbplayer)
+        
+        
+def add_player_data():
+    """Retrieve the API data (player stats) and add all the player stats to local db.
+    Need to call this function manually in order to seed the players table."""
+    
+    r = requests.get(f"https://nba-stats-db.herokuapp.com/api/playerdata/season/2023")
+    resp = r.json()
+    players = resp['results']
+    make_dbplayers(players)
+    # resp contains 100 players per response
+    while resp['next']:
+        r = requests.get(resp['next'])
+        resp = r.json()
+        players = resp['results']
+        make_dbplayers(players)
+    
+    db.session.commit()
 
 ####################### general user routes ###########################
 
@@ -127,24 +154,31 @@ def show_player_search_details():
     
         player_search = request.args.get("q")
         
-        r = requests.get(f"https://nba-stats-db.herokuapp.com/api/playerdata/name/{player_search}")
-        resp = r.json()
-        if resp['count'] == 0:
+        players = Player.query.filter(unaccent(Player.name).ilike(f"%{player_search}%")).all()
+        
+        if players == []:
             flash("No data for player. Check spelling.", "danger")
             
             return redirect('/player-details')
-        # pdb.set_trace()
     
-        return render_template("players.html", resp=resp)
+        return render_template("players.html", players=players)
     
     else:
-        r = requests.get("https://nba-stats-db.herokuapp.com/api/playerdata/season/2023")
-        resp = r.json()
+        players = Player.query.filter(Player.id.between(random.randint(1,304), random.randint(305,609))).limit(8).all()
         
-        return render_template("players.html", resp=resp)
+        return render_template("players.html", players=players)
         
 @app.route("/comparison")
 def compare_players():
     """Show page for comparing player statistics and add player to user draft list."""
     
     return render_template("compare.html")
+
+####################### list routes ############################
+
+@app.route("/add-player", methods=['POST'])
+def add_player_to_draftlist():
+    """Add user selcted player to user draftlist"""
+    
+    
+    

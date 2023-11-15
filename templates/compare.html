@@ -2,17 +2,39 @@
 content %}
 
 <h1 class="diplay-1">Player Comparison</h1>
-<form class="d-flex" role="search" id="add-player-form">
+<form class="d-flex" role="search" id="compare-player-form">
   <input
     class="form-control me-2"
     type="search"
     placeholder="Add Player"
-    id="player" />
-  <button class="btn btn-outline-success">Add</button>
+    id="player1" />
+    <p>VS</p>
+    <input
+    class="form-control me-2"
+    type="search"
+    placeholder="Add Player"
+    id="player2" />
+  <button class="btn btn-outline-success">Compare</button>
 </form>
 <br />
 <div class="row justify-content-center" id="player-cards">
   <!-- Player cards for comparison will go here  -->
 </div>
-
+<div class="row">
+  <div class="col">
+    <div class="list-group">
+      <a href="#" id="pg" class="list-group-item list-group-item-action">Point Guard</a>
+      <a href="#" id="sg" class="list-group-item list-group-item-action id="""
+        >Shooting Guard</a
+      >
+      <a href="#" id="sf" class="list-group-item list-group-item-action"
+        >Strong Forward</a
+      >
+      <a href="#" id="pf" class="list-group-item list-group-item-action"
+        >Power Forward</a
+      >
+      <a href="#" id="c" class="list-group-item list-group-item-action">Center</a>
+    </div>
+  </div>
+</div>
 {% endblock %}
