@@ -10,7 +10,7 @@ function makePlayerCardHtml(res) {
                         <li class='list-group-item'> Blocks: ${res.data.results[0].BLK}</li>
                         <li class='list-group-item'> Assists: ${res.data.results[0].AST}</li>
                         <li class='list-group-item'>
-                          <form id="add-player-form">
+                          <form id="add-player-form" data-id="${res.data.results[0].id}" data-player="${res.data.results[0].player_name}">
                             <div class="form-check">
                               <input class="form-check-input" value="sg" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
                               <label class="form-check-label" for="flexRadioDefault1">
@@ -41,9 +41,10 @@ function makePlayerCardHtml(res) {
                               Center
                               </label>
                             </div>
-                            <button type="button" data-player="${res.data.results[0].player_name}" class="btn btn-primary" id="add-player-btn" >Primary</button>
+                            <button type="submit" class="btn btn-primary" id="add-player-btn" >Primary</button>
                           </form>
                         </li>
+                        <pre id="log"></pre>
                     </ul>
                 </div>
             </div>`;
@@ -57,11 +58,11 @@ async function addPlayer(player1, player2) {
 
     $("#player-cards").append(playerCardHtml1);
     $("#player-cards").append(playerCardHtml2);
-    $("#add-player-form").trigger("reset");
+    $("#compare-player-form").trigger("reset");
 }
 
-$("#compare-player-form").on('submit', async function (evt) {
-    evt.preventDefault();
+$("#compare-player-form").on('submit', async function (event) {
+    event.preventDefault();
     $("#player-cards").empty();
     const inputPlayer1 = $('#player1').val();
     const inputPlayer2 = $('#player2').val();
@@ -69,11 +70,21 @@ $("#compare-player-form").on('submit', async function (evt) {
     await addPlayer(inputPlayer1, inputPlayer2);
 });
 
-
-
-$(document).on("click", "#add-player-form", function(evt){
+$(document).on("submit", "#add-player-form",  function (evt) {
     evt.preventDefault();
-    const playerName = evt.target.dataset.player;
-    const data = new FormData($("#add-player-form"))
-    console.log(data)
-})
+
+    const addPlayerForm = evt.target;
+    const playerName = addPlayerForm.dataset.player;
+    let position = '';
+    for (let input of addPlayerForm) {
+        if (input.checked == true) {
+            position = input.value;
+        };
+    };
+    const listPosition = $(`#${position}`);
+    listPosition.empty();
+    listPosition.text(`${playerName}`);
+    $("#player-cards").empty();
+});
+
+
