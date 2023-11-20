@@ -75,11 +75,11 @@ class List(db.Model):
     __tablename__ = 'lists'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    pg = db.Column(db.Integer, default='point guard')
-    sg = db.Column(db.Integer, default='shooting guard')
-    sf = db.Column(db.Integer, default='strong forward')
-    pf = db.Column(db.Integer, default='power forward')
-    c = db.Column(db.Integer, default='center')
+    pg_id = db.Column(db.Integer, default='point guard')
+    sg_id = db.Column(db.Integer, default='shooting guard')
+    sf_id = db.Column(db.Integer, default='strong forward')
+    pf_id = db.Column(db.Integer, default='power forward')
+    c_id = db.Column(db.Integer, default='center')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     
 class Player(db.Model):
@@ -96,11 +96,25 @@ class Player(db.Model):
     field_goal_percent = db.Column(db.Float(3))
     three_percent = db.Column(db.Float(3))
     minutes_played = db.Column(db.Integer)
+    
+    def serialize(self):
+        """method for serializing player objects"""
+        return {
+            'id': self.id,
+            'name': self.name,
+            'team': self.team,
+            'points': self.points,
+            'assists': self.assists,
+            'blocks': self.blocks,
+            'field_goal_percent': self.field_goal_percent,
+            'three_percent': self.three_percent,
+            'minutes_played': self.minutes_played
+        }
         
 class PlayerList(db.Model):
     """Player List model"""
     
-    __tablename__ = 'player_list'
+    __tablename__ = 'player_lists'
     
     player_id = db.Column(db.Integer, db.ForeignKey('players.id', ondelete='CASCADE'), primary_key=True)
     list_id = db.Column(db.Integer, db.ForeignKey('lists.id', ondelete='CASCADE'), primary_key=True)

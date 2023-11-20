@@ -1,19 +1,19 @@
 """Draft List application."""
-import requests, random
+import requests, random, json
 import pdb
-from flask import Flask, request, render_template, redirect, flash, session
+from flask import Flask, request, render_template, redirect, flash, session, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, List, PlayerList, Player
-from forms import RegisterForm, LoginForm
+from forms import RegisterForm, LoginForm, ComparePlayerForm, ListForm
 from sqlalchemy.sql.functions import ReturnTypeFromArgs
  
 class unaccent(ReturnTypeFromArgs):
     pass
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///fantasy-draft-listdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///fantasy-listdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = False
+app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = "iliketrucks12345"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
@@ -61,7 +61,26 @@ def add_player_data():
         make_dbplayers(players)
     
     db.session.commit()
+    
+    return
 
+def data_check():
+    """check to see if there is currently data in the local database and if not add the data"""
+    if Player.query.count() == 0:
+        add_player_data()
+        return
+
+data_check()
+
+def authorization_check():
+    """check to see if the user is logged in and """
+    
+    if  not session["USER_ID"]:
+        flash("Restricted access, Please login", "danger")
+
+    else:
+        return True
+    
 ####################### general user routes ###########################
 
 @app.route("/")
@@ -146,6 +165,21 @@ def login():
 
 ################## player search and comparison routes #########################
 
+@app.route("/player-search")
+def get_player_dbdata():
+    """get player data from local db and return as JSON"""
+    
+    p1 = request.args['player1']
+    p2 = request.args['player2']
+    print(f"##########################request.args: {request.args}")
+    player1 = Player.query.filter(unaccent(Player.name).ilike(f"%{p1}%")).first()
+    player2 = Player.query.filter(unaccent(Player.name).ilike(f"%{p2}%")).first()
+    print(f"##########################player1:{player1}")
+    
+    response_json = jsonify(player1=player1.serialize(), player2=player2.serialize())
+    print(f"########################response: {response_json}")
+    return ((response_json, 201))
+
 @app.route("/player-details")
 def show_player_search_details():
     """Handle user search for a specific player and display player stats"""
@@ -170,13 +204,31 @@ def show_player_search_details():
         
 @app.route("/comparison")
 def compare_players():
-    """Show page for comparing player statistics and add player to user draft list."""
+    """Show page for comparing player statistics and add players to user draft list."""
     
-    return render_template("compare.html")
+    form1 = ComparePlayerForm()
+    form2 = ListForm()
+    
+    if form2.validate_on_submit():
+        pg = db.session.query(Player.id).filter(Player.name.ilike("form2.power_forward.data")).first()
+        sg = db.session.query(Player.id).filter(Player.name.ilike("form2.power_forward.data")).first()
+        sf = db.session.query(Player.id).filter(Player.name.ilike("form2.power_forward.data")).first()
+        pf = db.session.query(Player.id).filter(Player.name.ilike("Jamal Murray")).first()
+        c = db.session.query(Player.id).filter(Player.name.ilike("Jamal Murray")).first()
+        pg_id = pg.id
+        sg_id = sg.id
+        sf_id = sf.id
+        pf_id = pf.id
+        c_id = c.id
+        user_id = session["USER_ID"]
+        list = List(pg_id=pg_id, sg_id=sg_id, sf_id=sf_id, pf_id=pf_id, c_id=c_id, user_id=user_id)
+        
+    
+    return render_template("compare.html", form1=form1, form2=form2)
 
 ####################### list routes ############################
 
-@app.route("/add-player", methods=['POST'])
+@app.route("/add-players", methods=['POST'])
 def add_player_to_draftlist():
     """Add user selcted player to user draftlist"""
     

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, EmailField, TextAreaField
+from wtforms import StringField, PasswordField, EmailField, TextAreaField, SearchField
 from wtforms.validators import InputRequired
 
 class RegisterForm(FlaskForm):
@@ -16,3 +16,18 @@ class LoginForm(FlaskForm):
     
     username = StringField("Username", validators=[InputRequired()])
     password = PasswordField("Password", validators=[InputRequired()])
+    
+class ComparePlayerForm(FlaskForm):
+    """form to enter players to compare"""
+    
+    player1 = SearchField("Player 1", validators=[InputRequired()], id="player1")
+    player2 = SearchField("Player 2", validators=[InputRequired()], id="player2")
+    
+class ListForm(FlaskForm):
+    """form for entering and saving a list"""
+    
+    point_guard = StringField("Point Guard", validators=[InputRequired()], id="pg")
+    strong_guard = StringField("Strong Guard", validators=[InputRequired()], id="sg")
+    small_forward= StringField("Small Forward", validators=[InputRequired()], id="sf")
+    power_forward = StringField("Power Forward", validators=[InputRequired()], id="pf")
+    center = StringField("Center", validators=[InputRequired()], id="c")
