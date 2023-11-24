@@ -32,7 +32,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href='/user-detail/{{ session["USER_ID"] }}'
+                  href='/user/{{ session["USER_ID"] }}/details'
                   >{{ session["USERNAME"] }}</a>
               </li>
               <li class="nav-item">
@@ -45,11 +45,11 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  href='/comparison'
+                  href='/player/comparison'
                 >Compare Players</a>
               </li>
             </ul>
-            <form class="d-flex" role="search" action="/player-details">
+            <form class="d-flex" role="search" action="/player/details">
               <input
                 class="form-control me-2"
                 type="search"
@@ -77,6 +77,6 @@
       crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/axios/dist/axios.js"></script>
-	  <script src="static/script.js"></script>
+	  <script src="/static/script.js"></script>
   </body>
 </html>

@@ -12,15 +12,15 @@ function makePlayerCardHtml(player) {
                 <li class='list-group-item'>
                   <form id="add-player-form" data-id="${player.id}" data-player="${player.name}">
                     <div class="form-check">
-                      <input class="form-check-input" value="sg" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                      <input class="form-check-input" value="pg" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
                       <label class="form-check-label" for="flexRadioDefault1">
-                        Strong Guard
+                        Point Guard
                       </label>
                     </div>
                     <div class="form-check">
-                      <input class="form-check-input" value="pg" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                      <input class="form-check-input" value="sg" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
                       <label class="form-check-label" for="flexRadioDefault2">
-                        Point Guard
+                        Strong Guard
                       </label>
                     </div>
                     <div class="form-check">
@@ -41,7 +41,7 @@ function makePlayerCardHtml(player) {
                         Center
                       </label>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="add-player-btn" >Primary</button>
+                    <button type="submit" class="btn btn-primary" id="add-player-btn" >Add</button>
                   </form>
                 </li>
               </ul>
@@ -50,7 +50,7 @@ function makePlayerCardHtml(player) {
 }
 
 async function addPlayer(player1, player2) {
-  const res = await axios.get('/player-search', {
+  const res = await axios.get('/player/search', {
     params: { player1, player2 },
   });
   

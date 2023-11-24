@@ -9,9 +9,10 @@
   <div class="col-6">
     <div class="card" style="width: 18rem">
       <ul class="list-group list-group-flush">
-        <li class="list-group-item">An item</li>
-        <li class="list-group-item">A second item</li>
-        <li class="list-group-item">A third item</li>
+        {% for player in list.players %}
+        <li class="list-group-item">{{ player.name }}</li>
+        {% endfor %}
+        <li class="list-group-item"><a href="/list/{{ list.id }}/delete">Delete</a></li>
       </ul>
     </div>
   </div>

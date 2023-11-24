@@ -13,20 +13,6 @@ content %}
     <button class="btn btn-outline-success">Compare</button>
   </div>
 </form>
-<!-- <form class="d-flex" role="search" id="compare-player-form">
-  <input
-    class="form-control me-2"
-    type="search"
-    placeholder="Add Player"
-    id="player1" />
-  <p>VS</p>
-  <input
-    class="form-control me-2"
-    type="search"
-    placeholder="Add Player"
-    id="player2" />
-  <button class="btn btn-outline-success">Compare</button>
-</form> -->
 <br />
 <div class="row justify-content-center" id="player-cards">
   <!-- Player cards for comparison will go here  -->
@@ -39,29 +25,8 @@ content %}
     field.errors%}
     <small class="form-text text-danger"> {{err}} </small>
     {% endfor %} {% endfor %}
-    <button formaction="/player" class="btn btn-outline-success">Save</button>
+    <button formmethod="POST" type="submit" class="btn btn-outline-success">Save</button>
   </div>
 </form>
-<!-- <div class="row">
-  <div class="col">
-    <div class="list-group">
-      <a href="#" class="list-group-item list-group-item-action">
-        Point Guard:
-      <span id="pg" style="margin-left: 1rem"></span></a>
-      <a href="#" class="list-group-item list-group-item-action">
-        Shooting Guard:
-      <span id="sg" style="margin-left: 1rem"></span></a>
-      <a href="#" class="list-group-item list-group-item-action">
-        Small Forward:
-      <span id="sf" style="margin-left: 1rem"></span></a>
-      <a href="#" class="list-group-item list-group-item-action">
-        Power Forward:
-      <span id="pf" style="margin-left: 1rem"></span></a>
-      <a href="#" class="list-group-item list-group-item-action">
-        Center:
-      <span id="c" style="margin-left: 1rem"></span></a>
-      <button class="btn btn-outline-success">Compare</button>
-    </div> -->
-  <!-- </div> -->
-<!-- </div> -->
+
 {% endblock %}

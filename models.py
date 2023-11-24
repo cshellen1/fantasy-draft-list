@@ -80,7 +80,20 @@ class List(db.Model):
     sf_id = db.Column(db.Integer, default='strong forward')
     pf_id = db.Column(db.Integer, default='power forward')
     c_id = db.Column(db.Integer, default='center')
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
+    
+    players = db.relationship('Player', secondary='player_lists', backref='lists')
+    
+    def add_to_playerlists(self):
+        """add the player id and associated list id to playerlists table in order to use defined relationships"""
+        
+        id_list = [self.pg_id, self.sg_id, self.sf_id, self.pf_id, self.c_id]
+        
+        for id in id_list:
+            pl = PlayerList(player_id=id, list_id=self.id)
+            db.session.add(pl)
+        
+        db.session.commit()
     
 class Player(db.Model):
     """Table for all the players in the"""

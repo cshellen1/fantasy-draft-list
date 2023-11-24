@@ -73,12 +73,10 @@ def data_check():
 data_check()
 
 def authorization_check():
-    """check to see if the user is logged in and """
+    """check to see if the user is logged in by looking for the USER_ID in the session"""
     
-    if  not session["USER_ID"]:
-        flash("Restricted access, Please login", "danger")
-
-    else:
+    if not session.get("USER_ID", None) == None:
+    
         return True
     
 ####################### general user routes ###########################
@@ -113,21 +111,24 @@ def register_new_user():
         
         run_login(new_user)
         
-        return redirect(f"/user-detail/{new_user.id}")
+        return redirect(f"/user/{new_user.id}/details")
     
     return render_template('register.html', form=form)
 
-@app.route("/user-detail/<int:id>")
+@app.route("/user/<int:id>/details")
 def show_user_profile(id):
     """If user logged in shows user profile with all user details."""
     
-    if not session.get("USER_ID", None) == None:
-        user = User.query.get_or_404(id)
+    if authorization_check():    
         
-        return render_template("user-profile.html", user=user)
+        user = User.query.get_or_404(id)
+        lists = user.lists
+        print(lists)
+        return render_template("user-profile.html", user=user, lists=lists)
         
     else:
         flash("Invalid Credentials", "danger")
+        
         return redirect("/")   
     
 @app.route("/logout")
@@ -154,7 +155,7 @@ def login():
             flash(f"Welcome back {user.first_name}!", "success")
             run_login(user)
             
-            return redirect(f"/user-detail/{user.id}")
+            return redirect(f"/user/{user.id}/details")
     
         else:
             flash("Invalid Username/Password", "danger")
@@ -165,24 +166,28 @@ def login():
 
 ################## player search and comparison routes #########################
 
-@app.route("/player-search")
+@app.route("/player/search")
 def get_player_dbdata():
     """get player data from local db and return as JSON"""
     
     p1 = request.args['player1']
     p2 = request.args['player2']
-    print(f"##########################request.args: {request.args}")
+    
     player1 = Player.query.filter(unaccent(Player.name).ilike(f"%{p1}%")).first()
     player2 = Player.query.filter(unaccent(Player.name).ilike(f"%{p2}%")).first()
-    print(f"##########################player1:{player1}")
     
     response_json = jsonify(player1=player1.serialize(), player2=player2.serialize())
-    print(f"########################response: {response_json}")
+   
     return ((response_json, 201))
 
-@app.route("/player-details")
+@app.route("/player/details")
 def show_player_search_details():
     """Handle user search for a specific player and display player stats"""
+    
+    if not authorization_check():
+        flash("restricted access please login", "danger")
+        
+        return redirect('/login')
     
     if request.args.get("q"):
     
@@ -193,7 +198,7 @@ def show_player_search_details():
         if players == []:
             flash("No data for player. Check spelling.", "danger")
             
-            return redirect('/player-details')
+            return redirect('/player/details')
     
         return render_template("players.html", players=players)
     
@@ -202,35 +207,59 @@ def show_player_search_details():
         
         return render_template("players.html", players=players)
         
-@app.route("/comparison")
+@app.route("/player/comparison", methods=["POST", "GET"])
 def compare_players():
     """Show page for comparing player statistics and add players to user draft list."""
+    
+    if not authorization_check():
+        flash("restricted access please login", "danger")
+        
+        return redirect('/login')
+        
     
     form1 = ComparePlayerForm()
     form2 = ListForm()
     
+        
     if form2.validate_on_submit():
-        pg = db.session.query(Player.id).filter(Player.name.ilike("form2.power_forward.data")).first()
-        sg = db.session.query(Player.id).filter(Player.name.ilike("form2.power_forward.data")).first()
-        sf = db.session.query(Player.id).filter(Player.name.ilike("form2.power_forward.data")).first()
-        pf = db.session.query(Player.id).filter(Player.name.ilike("Jamal Murray")).first()
-        c = db.session.query(Player.id).filter(Player.name.ilike("Jamal Murray")).first()
-        pg_id = pg.id
-        sg_id = sg.id
-        sf_id = sf.id
-        pf_id = pf.id
-        c_id = c.id
+        pg = db.session.query(Player.id).filter(Player.name.ilike(f"{form2.point_guard.data}")).first()
+        sg = db.session.query(Player.id).filter(Player.name.ilike(f"{form2.strong_guard.data}")).first()
+        sf = db.session.query(Player.id).filter(Player.name.ilike(f"{form2.small_forward.data}")).first()
+        pf = db.session.query(Player.id).filter(Player.name.ilike(f"{form2.power_forward.data}")).first()
+        c = db.session.query(Player.id).filter(Player.name.ilike(f"{form2.center.data}")).first()
+
+        pg_id = pg[0]
+        sg_id = sg[0]
+        sf_id = sf[0]
+        pf_id = pf[0]
+        c_id = c[0]
         user_id = session["USER_ID"]
         list = List(pg_id=pg_id, sg_id=sg_id, sf_id=sf_id, pf_id=pf_id, c_id=c_id, user_id=user_id)
         
-    
+        db.session.add(list)
+        db.session.commit()
+        
+        list.add_to_playerlists()
+        
+        
+        return redirect(f"/user/{user_id}/details")
+        
     return render_template("compare.html", form1=form1, form2=form2)
 
 ####################### list routes ############################
 
-@app.route("/add-players", methods=['POST'])
-def add_player_to_draftlist():
-    """Add user selcted player to user draftlist"""
+@app.route("/list/<int:id>/delete")
+def add_player_to_draftlist(id):
+    """Delete player list"""
+    
+    List.query.filter_by(id=id).delete()
+    
+    db.session.commit()
+    
+    return redirect(f'/user/{session["USER_ID"]}/details')
+    
+    
+    
     
     
     
