@@ -18,8 +18,8 @@ app.config['SECRET_KEY'] = "iliketrucks12345"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
-
-connect_db(app)
+# connect_db needs to be commented out for testing. So that when the app is initiallized the configuration changes for testing will be read.
+# connect_db(app)
 
 
 def run_login(user):
@@ -70,7 +70,7 @@ def data_check():
         add_player_data()
         return
 
-data_check()
+# data_check()
 
 def authorization_check():
     """check to see if the user is logged in by looking for the USER_ID in the session"""
@@ -149,6 +149,7 @@ def login():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
+        
         user = User.authenticate(username, password)
         
         if user:
