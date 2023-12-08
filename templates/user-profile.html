@@ -12,7 +12,7 @@
         {% for player in list.players %}
         <li class="list-group-item">{{ player.name }}</li>
         {% endfor %}
-        <li class="list-group-item"><a href="/list/{{ list.id }}/delete">Delete</a></li>
+        <li class="list-group-item"><a href="/list/{{ list.id }}/delete" method="DELETE">Delete</a></li>
       </ul>
     </div>
   </div>

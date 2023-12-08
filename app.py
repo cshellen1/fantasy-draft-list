@@ -249,15 +249,21 @@ def compare_players():
 
 ####################### list routes ############################
 
-@app.route("/list/<int:id>/delete")
-def add_player_to_draftlist(id):
+@app.route("/list/<int:id>/delete", methods=["DELETE"])
+def delete_draftlist(id):
     """Delete player list"""
     
-    List.query.filter_by(id=id).delete()
+    if authorization_check():
     
-    db.session.commit()
+        List.query.filter_by(id=id).delete()
+        db.session.commit()
     
-    return redirect(f'/user/{session["USER_ID"]}/details')
+        return redirect(f'/user/{session["USER_ID"]}/details')
+    
+    else:
+        flash("Unauthorized please", "danger")
+        
+        return redirect("/login")
     
     
     
