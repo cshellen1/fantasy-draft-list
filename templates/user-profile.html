@@ -1,22 +1,25 @@
-{% extends "base.html" %} 
-{% block title %}profile{% endblock %} 
+{% extends "index.html" %}
+{% block title %}profile{% endblock %}
 
 {% block content %}
-<h1 class="text-center display-2">{{user.first_name}}'s Lists</h1>
+<div class="row justify-content-center">
+  <h1 class="text-center display-2">{{user.first_name}}'s Lists</h1>
+</div>
 {% if user.lists %}
-<div class="row">
+<div class="row g-3 justify-content-center">
   {% for list in lists %}
-  <div class="col-6">
+  <div class="col-md-auto">
     <div class="card" style="width: 18rem">
+      <h5 class="card-title text-center">{{ list.name }}</h5>
       <ul class="list-group list-group-flush">
         {% for player in list.players %}
         <li class="list-group-item">{{ player.name }}</li>
         {% endfor %}
-        <li class="list-group-item"><a href="/list/{{ list.id }}/delete" method="DELETE">Delete</a></li>
+        <li class="list-group-item"><a href="/list/{{ list.id }}/delete">Delete</a></li>
       </ul>
     </div>
   </div>
   {% endfor %}
 </div>
-{% endif %} 
+{% endif %}
 {% endblock %}

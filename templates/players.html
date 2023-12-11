@@ -1,19 +1,27 @@
-{% extends "base.html" %} {% block title %}players{% endblock %} {% block
+{% extends "index.html" %} {% block title %}players{% endblock %} {% block
 content %}
 
-<div class="row justify-content-center">
+<div class="row g-3 justify-content-evenly">
   {% for player in players %}
-  <div class="col col-3">
+  <div class="col col-3 mx-1">
     <div class="card" style="width: 18rem">
+      <h5 class="card-title text-center">{{player.name}} {{player.team}}</h5>
       <ul class="list-group list-group-flush">
-        <li class="list-group-item">{{player.name}} {{player.team}}</li>
         <li class="list-group-item">Total Points: {{player.points}}</li>
+        {% if player.field_goal_percent is float %}
         <li class="list-group-item">
           Field Goal %: {{ (player.field_goal_percent*100)|round(2) }}
         </li>
-        <li class="list-group-item">
-          Three point %: {{ (player.three_percent*100)|round(2) }}
-        </li>
+        {% else %}
+        <li>Field Goal %: na</li>
+        {% endif %}
+        {% if player.three_percent is float %}
+          <li class="list-group-item">
+              Three Point %: {{ (player.three_percent*100)|round(2) }}
+          </li>
+        {% else %}
+          <li class="list-group-item">Three Point %: na</li>
+        {% endif %}
         <li class="list-group-item">Blocks: {{player.blocks}}</li>
         <li class="list-group-item">Assists: {{player.assists}}</li>
       </ul>

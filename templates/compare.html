@@ -1,32 +1,38 @@
-{% extends "base.html" %} {% block title %}players{% endblock %} {% block
+{% extends "index.html" %} {% block title %}players{% endblock %} {% block
 content %}
-
-<h1 class="diplay-1">Player Comparison</h1>
-<form class="d-flex" role="search" id="compare-player-form">
-  <div class="form-group">
-    {{ form1.hidden_tag() }} {% for field in form1 if field.widget.input_type
-    !='hidden'%}
-    {{field.label}} {{field(class_='form-control me-2')}} {% for err in
-    field.errors%}
-    <small class="form-text text-danger"> {{err}} </small>
-    {% endfor %} {% endfor %}
-    <button class="btn btn-outline-success">Compare</button>
-  </div>
-</form>
-<br />
-<div class="row justify-content-center" id="player-cards">
-  <!-- Player cards for comparison will go here  -->
+<div class="container text-center">
+  <h1 class="diplay-1">Player Comparison</h1>
+    <form class="row g-3" role="search" id="compare-player-form">
+        {{ form1.hidden_tag() }} {% for field in form1 if field.widget.input_type
+        !='hidden'%}
+          <div class="col">
+          {{field.label}} {{field(class_='form-control')}} 
+          {% for err in field.errors%}
+            <small class="form-text text-danger"> {{err}} </small>
+          {% endfor %}
+        </div> 
+        {% endfor %}
+        <div class="row g-2 justify-content-center">
+          <button class="btn btn-outline-success col-4">Compare</button>
+        </div>
+    </form>
+    <br />
+    <div class="row justify-content-center" id="player-cards">
+      <!-- Player cards for comparison will go here  -->
+    </div>
+    <form class="row g-3" role="search" id="list-form">
+        {{ form2.hidden_tag() }} 
+        {% for field in form2 if field.widget.input_type !='hidden'%}
+        <div class="col-2">
+        {{field.label}} {{field(class_='form-control me-2')}} {% for err in
+        field.errors%}
+        <small class="form-text text-danger"> {{err}} </small>
+        {% endfor %}
+        </div> 
+        {% endfor %}
+        <div class="row g-2 justify-content-center">
+        <button formmethod="POST" type="submit" class="col-4 btn btn-outline-success">Save</button>
+        </div>
+    </form>
 </div>
-<form class="d-flex" role="search" id="list-form">
-  <div class="form-group">
-    {{ form2.hidden_tag() }} {% for field in form2 if field.widget.input_type
-    !='hidden'%}
-    {{field.label}} {{field(class_='form-control me-2')}} {% for err in
-    field.errors%}
-    <small class="form-text text-danger"> {{err}} </small>
-    {% endfor %} {% endfor %}
-    <button formmethod="POST" type="submit" class="btn btn-outline-success">Save</button>
-  </div>
-</form>
-
 {% endblock %}

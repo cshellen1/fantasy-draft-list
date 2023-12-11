@@ -1,25 +1,41 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+{% extends "index.html" %} {% block title %}Home{% endblock %} {% block content%}
 
 <h1 class="text-center display-2">Draft Lists!</h1>
 <div class="row justify-content-center">
-  <div class="col col-8">
-    <div class="card" style="width: 50rem">
-      <img src="/static/images/home-pic.jpg" class="card-img-top" alt="picture of fan filled stadium" />
+  
+    <div class="card col-10">
       <div class="card-body">
-        <p class="card-text">
+        <p class="card-text text-center fs-4">
           Use last seasons stats to create next seasons fantasy draft list! Pick
           players to compare and add them to your draft list. Save multiple
-          lists to your profile. Create a primary list and a back up list.
+          lists to your profile.
         </p>
       </div>
+      {% if not session["USER_ID"] %}
+        <p class="text-center fs-3">
+          <a href="/register"
+            class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Register</a>
+        </p>
+      {% endif %}
+      <img src="/static/images/home-pic.jpg" class="card-img-top" alt="picture of fan filled stadium"/>
+    </div>
+  
+</div>
+{% if lists %}
+<div class="row g-3 justify-content-center">
+  {% for list in lists %}
+  <div class="col-md-auto">
+    <div class="card" style="width: 18rem">
+      <h5 class="card-title text-center">{{ list.name }}</h5>
+      <p class="text-center">Username: {{ list.user.username }}</p>
+      <ul class="list-group list-group-flush">
+        {% for player in list.players %}
+        <li class="list-group-item">{{ player.name }}</li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
+  {% endfor %}
 </div>
-{% if not session["USER_ID"] %}
-
-<p class="text-center fs-3">
-  <a href="/register"
-    class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Register</a>
-</p>
-
-{% endif %} {% endblock %}
+{% endif %}
+{% endblock %}

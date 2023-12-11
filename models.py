@@ -75,6 +75,7 @@ class List(db.Model):
     __tablename__ = 'lists'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(20), nullable=False)
     pg_id = db.Column(db.Integer, default='point guard')
     sg_id = db.Column(db.Integer, default='shooting guard')
     sf_id = db.Column(db.Integer, default='strong forward')

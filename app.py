@@ -19,7 +19,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
 # connect_db needs to be commented out for testing. So that when the app is initiallized the configuration changes for testing will be read.
-# connect_db(app)
+connect_db(app)
 
 
 def run_login(user):
@@ -70,7 +70,7 @@ def data_check():
         add_player_data()
         return
 
-# data_check()
+data_check()
 
 def authorization_check():
     """check to see if the user is logged in by looking for the USER_ID in the session"""
@@ -79,13 +79,24 @@ def authorization_check():
     
         return True
     
+def get_random(num_records, model):
+    """function to get random records of a specified amount"""
+    
+    total_records = model.query.count()
+    random_indices = random.sample(range(1, total_records + 1), min(num_records, total_records))
+    random_records = model.query.filter(model.id.in_(random_indices)).all()
+    
+    return random_records
+
 ####################### general user routes ###########################
 
 @app.route("/")
 def show_home():
     """Shows home page"""
     
-    return render_template("home.html")
+    lists = get_random(6, List)
+    
+    return render_template("home.html", lists=lists)
 
 @app.route('/register', methods=["POST", "GET"])
 def register_new_user():
@@ -123,7 +134,7 @@ def show_user_profile(id):
         
         user = User.query.get_or_404(id)
         lists = user.lists
-        print(lists)
+        
         return render_template("user-profile.html", user=user, lists=lists)
         
     else:
@@ -202,9 +213,9 @@ def show_player_search_details():
             return redirect('/player/details')
     
         return render_template("players.html", players=players)
-    
     else:
-        players = Player.query.filter(Player.id.between(random.randint(1,304), random.randint(305,609))).limit(8).all()
+        
+        players = get_random(6, Player)
         
         return render_template("players.html", players=players)
         
@@ -223,19 +234,21 @@ def compare_players():
     
         
     if form2.validate_on_submit():
+        
         pg = db.session.query(Player.id).filter(Player.name.ilike(f"{form2.point_guard.data}")).first()
         sg = db.session.query(Player.id).filter(Player.name.ilike(f"{form2.strong_guard.data}")).first()
         sf = db.session.query(Player.id).filter(Player.name.ilike(f"{form2.small_forward.data}")).first()
         pf = db.session.query(Player.id).filter(Player.name.ilike(f"{form2.power_forward.data}")).first()
         c = db.session.query(Player.id).filter(Player.name.ilike(f"{form2.center.data}")).first()
 
+        name = form2.name.data
         pg_id = pg[0]
         sg_id = sg[0]
         sf_id = sf[0]
         pf_id = pf[0]
         c_id = c[0]
         user_id = session["USER_ID"]
-        list = List(pg_id=pg_id, sg_id=sg_id, sf_id=sf_id, pf_id=pf_id, c_id=c_id, user_id=user_id)
+        list = List(name=name, pg_id=pg_id, sg_id=sg_id, sf_id=sf_id, pf_id=pf_id, c_id=c_id, user_id=user_id)
         
         db.session.add(list)
         db.session.commit()
@@ -249,7 +262,7 @@ def compare_players():
 
 ####################### list routes ############################
 
-@app.route("/list/<int:id>/delete", methods=["DELETE"])
+@app.route("/list/<int:id>/delete")
 def delete_draftlist(id):
     """Delete player list"""
     

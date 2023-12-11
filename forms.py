@@ -26,6 +26,7 @@ class ComparePlayerForm(FlaskForm):
 class ListForm(FlaskForm):
     """form for entering and saving a list"""
     
+    name = StringField("List Name", validators=[InputRequired()], id="name")
     point_guard = StringField("Point Guard", validators=[InputRequired()], id="pg")
     strong_guard = StringField("Strong Guard", validators=[InputRequired()], id="sg")
     small_forward= StringField("Small Forward", validators=[InputRequired()], id="sf")

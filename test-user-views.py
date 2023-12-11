@@ -14,7 +14,7 @@ app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
 # connect_db has to be commented out in the app.py before running the test file. So that when the app is initiallized the configuration changes will be read. 
-connect_db(app)
+# connect_db(app)
 
 db.drop_all()
 db.create_all()
