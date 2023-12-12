@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, EmailField, TextAreaField, SearchField
+from wtforms import StringField, PasswordField, EmailField, TextAreaField, SelectField, SearchField
 from wtforms.validators import InputRequired
+
 
 class RegisterForm(FlaskForm):
     """form for registering a user"""
@@ -20,8 +21,8 @@ class LoginForm(FlaskForm):
 class ComparePlayerForm(FlaskForm):
     """form to enter players to compare"""
     
-    player1 = SearchField("Player 1", validators=[InputRequired()], id="player1")
-    player2 = SearchField("Player 2", validators=[InputRequired()], id="player2")
+    player1 = SelectField("Player 1", validators=[InputRequired()], description="test", id="player1")
+    player2 = SelectField("Player 2", validators=[InputRequired()], id="player2")
     
 class ListForm(FlaskForm):
     """form for entering and saving a list"""

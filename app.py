@@ -21,7 +21,6 @@ debug = DebugToolbarExtension(app)
 # connect_db needs to be commented out for testing. So that when the app is initiallized the configuration changes for testing will be read.
 connect_db(app)
 
-
 def run_login(user):
     """Login a user by saving the username and id to the session"""
     
@@ -82,8 +81,8 @@ def authorization_check():
 def get_random(num_records, model):
     """function to get random records of a specified amount"""
     
-    total_records = model.query.count()
-    random_indices = random.sample(range(1, total_records + 1), min(num_records, total_records))
+    existing_ids = [model.id for model in model.query.with_entities(model.id).all()]
+    random_indices = random.sample(existing_ids, min(num_records, len(existing_ids)))
     random_records = model.query.filter(model.id.in_(random_indices)).all()
     
     return random_records
@@ -227,11 +226,16 @@ def compare_players():
         flash("restricted access please login", "danger")
         
         return redirect('/login')
+    
+    all_players_names = Player.query.order_by(Player.name)
+    
+    form_choices = sorted(set([player.name for player in all_players_names]))
         
     
     form1 = ComparePlayerForm()
     form2 = ListForm()
-    
+    form1.player1.choices = form_choices
+    form1.player2.choices = form_choices
         
     if form2.validate_on_submit():
         
