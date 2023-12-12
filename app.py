@@ -13,7 +13,7 @@ class unaccent(ReturnTypeFromArgs):
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///fantasy-listdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = False
 app.config['SECRET_KEY'] = "iliketrucks12345"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
@@ -69,7 +69,7 @@ def data_check():
         add_player_data()
         return
 
-data_check()
+# data_check()
 
 def authorization_check():
     """check to see if the user is logged in by looking for the USER_ID in the session"""
