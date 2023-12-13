@@ -1,6 +1,6 @@
 """Draft List application."""
-import requests, random, json
-import pdb
+import requests, random
+import pdb, os
 from flask import Flask, request, render_template, redirect, flash, session, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, List, PlayerList, Player
@@ -11,9 +11,10 @@ class unaccent(ReturnTypeFromArgs):
     pass
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///fantasy-listdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    "DATABASE_URL", 'postgresql:///fantasy-listdb')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = False
+app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = "iliketrucks12345"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
@@ -69,7 +70,7 @@ def data_check():
         add_player_data()
         return
 
-# data_check()
+data_check()
 
 def authorization_check():
     """check to see if the user is logged in by looking for the USER_ID in the session"""
