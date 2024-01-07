@@ -185,8 +185,9 @@ def get_player_dbdata():
     p1 = request.args['player1']
     p2 = request.args['player2']
     
-    player1 = Player.query.filter(unaccent(Player.name).ilike(f"%{p1}%")).first()
-    player2 = Player.query.filter(unaccent(Player.name).ilike(f"%{p2}%")).first()
+    
+    player1 = Player.query.filter_by(name = p1).first()
+    player2 = Player.query.filter_by(name = p2).first()
     
     response_json = jsonify(player1=player1.serialize(), player2=player2.serialize())
    
