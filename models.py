@@ -110,6 +110,7 @@ class Player(db.Model):
     field_goal_percent = db.Column(db.Float(3))
     three_percent = db.Column(db.Float(3))
     minutes_played = db.Column(db.Integer)
+    season = db.Column(db.Integer)
     
     def serialize(self):
         """method for serializing player objects"""

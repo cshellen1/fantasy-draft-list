@@ -1,8 +1,8 @@
 function makePlayerCardHtml(player) {
-  return `<div class="col col-4">
-            <div class='card' style='width: 18rem;'>
+  return `<div class="col col-4 d-flex justify-content-center">
+            <div class='card text-bg-secondary' style='width: 18rem;'>
+              <h5 class='card-title text-center mt-2'>${player.name}, ${player.team}</h5>
               <ul class='list-group list-group-flush'>
-                <li class='list-group-item'>${player.name} ${player.team}</li>
                 <li class='list-group-item'> Season: 2023</li>
                 <li class='list-group-item'> Total Points: ${player.points}</li>
                 <li class='list-group-item'> Field Goal %: ${player.field_goal_percent}</li>

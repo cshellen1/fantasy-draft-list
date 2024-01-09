@@ -1,5 +1,5 @@
 """Draft List application."""
-import requests, random
+import requests, random, datetime
 import pdb, os
 from flask import Flask, request, render_template, redirect, flash, session, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
@@ -40,36 +40,61 @@ def make_dbplayers(players):
             blocks=player['BLK'],
             field_goal_percent=player['field_percent'],
             three_percent=player['three_percent'],
-            minutes_played=player['minutes_played'])
+            minutes_played=player['minutes_played'],
+            season=player['season'])
         
         db.session.add(dbplayer)
+
+curr_date = datetime.date.today()
+
+def delete_old_player_data():
+    """deletes previous years data"""
+    
+    db.session.query(Player).filter(Player.season == curr_date.year - 1).delete()
+    db.session.query(List).delete()
+    db.session.query(PlayerList).delete()
+
+    return
         
-        
-def add_player_data():
+def update_player_data():
     """Retrieve the API data (player stats) and add all the player stats to local db.
     Need to call this function manually in order to seed the players table."""
     
-    r = requests.get(f"https://nba-stats-db.herokuapp.com/api/playerdata/season/2023")
+    r = requests.get(f"https://nba-stats-db.herokuapp.com/api/playerdata/season/{curr_date.year}")
     resp = r.json()
     players = resp['results']
-    make_dbplayers(players)
-    # resp contains 100 players per response
-    while resp['next']:
-        r = requests.get(resp['next'])
-        resp = r.json()
-        players = resp['results']
+    
+    # this checks to make sure the api returned the player data in the response
+    if len(players) == 0:
+        return
+      
+    else:
         make_dbplayers(players)
-    
-    db.session.commit()
-    
-    return
+        # resp contains 100 players per response
+        while resp['next']:
+            r = requests.get(resp['next'])
+            resp = r.json()
+            players = resp['results']
+            make_dbplayers(players)
 
-def data_check():
-    """check to see if there is currently data in the local database and if not add the data"""
-    if Player.query.count() == 0:
-        add_player_data()
+        delete_old_player_data()
+        
+        db.session.commit()
+    
         return
 
+
+def data_check():
+    """checks to see if there is currently data from the last season in the local database and if not add the data from the most recent previous season ans delete the data from the oldest season in the local database"""
+    
+    if Player.query.count() == 0:
+        update_player_data()
+        return
+    
+    elif curr_date.year > db.session.query(Player.season).first()[0]:
+        update_player_data()
+        return
+    
 data_check()
 
 def authorization_check():
@@ -94,7 +119,7 @@ def get_random(num_records, model):
 def show_home():
     """Shows home page"""
     
-    lists = get_random(6, List)
+    lists = get_random(8, List)
     
     return render_template("home.html", lists=lists)
 
@@ -216,7 +241,7 @@ def show_player_search_details():
         return render_template("players.html", players=players)
     else:
         
-        players = get_random(6, Player)
+        players = get_random(12, Player)
         
         return render_template("players.html", players=players)
         
@@ -254,15 +279,23 @@ def compare_players():
         pf_id = pf[0]
         c_id = c[0]
         user_id = session["USER_ID"]
-        list = List(name=name, pg_id=pg_id, sg_id=sg_id, sf_id=sf_id, pf_id=pf_id, c_id=c_id, user_id=user_id)
         
-        db.session.add(list)
-        db.session.commit()
+        if len(set([pg_id,sg_id,sf_id,pf_id,c_id])) < 5:
+            flash('Please select 5 different players', 'danger')
+            
+            return redirect("/player/comparison")
         
-        list.add_to_playerlists()
+        else:
+            
+            list = List(name=name, pg_id=pg_id, sg_id=sg_id, sf_id=sf_id, pf_id=pf_id, c_id=c_id, user_id=user_id)
+        
+            db.session.add(list)
+            db.session.commit()
+        
+            list.add_to_playerlists()
         
         
-        return redirect(f"/user/{user_id}/details")
+            return redirect(f"/user/{user_id}/details")
         
     return render_template("compare.html", form1=form1, form2=form2)
 

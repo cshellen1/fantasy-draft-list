@@ -2,15 +2,15 @@
 {% block title %}profile{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <h1 class="text-center display-2">{{user.first_name}}'s Lists</h1>
-</div>
+
+<h1 class="text-center display-2 my-4 text-bg-primary">{{user.first_name}}'s Lists</h1>
+
 {% if user.lists %}
 <div class="row g-3 justify-content-center">
   {% for list in lists %}
   <div class="col-md-auto">
-    <div class="card" style="width: 18rem">
-      <h5 class="card-title text-center">{{ list.name }}</h5>
+    <div class="card text-bg-secondary" style="width: 18rem">
+      <h5 class="card-title text-center mt-2">{{ list.name }}</h5>
       <ul class="list-group list-group-flush">
         {% for player in list.players %}
         <li class="list-group-item">{{ player.name }}</li>

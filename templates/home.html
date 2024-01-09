@@ -1,11 +1,11 @@
 {% extends "index.html" %} {% block title %}Home{% endblock %} {% block content%}
 
-<h1 class="text-center display-2">Draft Lists!</h1>
+<h1 class="text-center display-2 my-4 text-bg-primary">Draft Lists!</h1>
 <div class="row justify-content-center">
   
-    <div class="card col-10">
+    <div class="card col-10 px-0">
       <div class="card-body">
-        <p class="card-text text-center fs-4">
+        <p class="card-text text-center fw-medium fs-3">
           Use last seasons stats to create next seasons fantasy draft list! Pick
           players to compare and add them to your draft list. Save multiple
           lists to your profile.
@@ -22,12 +22,12 @@
   
 </div>
 {% if lists %}
-<div class="row g-3 justify-content-center">
+<div class="row g-3 justify-content-center mt-2">
   {% for list in lists %}
   <div class="col-md-auto">
-    <div class="card" style="width: 18rem">
-      <h5 class="card-title text-center">{{ list.name }}</h5>
-      <p class="text-center">Username: {{ list.user.username }}</p>
+    <div class="card text-bg-secondary" style="width: 18rem">
+      <h5 class="card-title text-center mt-2">{{ list.name }}</h5>
+      <p class="text-center">user: {{ list.user.username }}</p>
       <ul class="list-group list-group-flush">
         {% for player in list.players %}
         <li class="list-group-item">{{ player.name }}</li>

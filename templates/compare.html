@@ -1,11 +1,11 @@
 {% extends "index.html" %} {% block title %}players{% endblock %} {% block
 content %}
+<h1 class="text-center display-2 my-4 text-bg-primary">Player Comparison</h1>
 <div class="container text-center">
-  <h1 class="diplay-1">Player Comparison</h1>
-    <form class="row g-3" role="search" id="compare-player-form">
+    <form class="row g-3 justify-content-center" role="search" id="compare-player-form">
         {{ form1.hidden_tag() }} {% for field in form1 if field.widget.input_type
         !='hidden'%}
-          <div class="col">
+          <div class="col-3">
           {{field.label}} 
           {{field(class_='form-control')}} 
           {% for err in field.errors%}
@@ -14,17 +14,17 @@ content %}
         </div> 
         {% endfor %}
         <div class="row g-2 justify-content-center">
-          <button class="btn btn-outline-success col-4">Compare</button>
+          <button class="btn btn-primary col-4">Compare</button>
         </div>
     </form>
     <br />
     <div class="row justify-content-center" id="player-cards">
       <!-- Player cards for comparison will go here  -->
     </div>
-    <form class="row g-3" role="search" id="list-form">
+    <form class="row g-3 justify-content-center my-2" role="search" id="list-form">
         {{ form2.hidden_tag() }} 
         {% for field in form2 if field.widget.input_type !='hidden'%}
-        <div class="col-2">
+        <div class="col-3">
         {{field.label}} {{field(class_='form-control me-2')}} {% for err in
         field.errors%}
         <small class="form-text text-danger"> {{err}} </small>
@@ -32,7 +32,7 @@ content %}
         </div> 
         {% endfor %}
         <div class="row g-2 justify-content-center">
-        <button formmethod="POST" type="submit" class="col-4 btn btn-outline-success">Save</button>
+        <button formmethod="POST" type="submit" class="col-4 btn btn-primary">Save</button>
         </div>
     </form>
 </div>

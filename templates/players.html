@@ -1,11 +1,11 @@
 {% extends "index.html" %} {% block title %}players{% endblock %} {% block
 content %}
 
-<div class="row g-3 justify-content-evenly">
+<div class="row g-3 justify-content-center mt-4">
   {% for player in players %}
   <div class="col col-3 mx-1">
-    <div class="card" style="width: 18rem">
-      <h5 class="card-title text-center">{{player.name}} {{player.team}}</h5>
+    <div class="card text-bg-secondary" style="width: 18rem">
+      <h5 class="card-title text-center mt-2">{{player.name}}, {{player.team}}</h5>
       <ul class="list-group list-group-flush">
         <li class="list-group-item">Total Points: {{player.points}}</li>
         {% if player.field_goal_percent is float %}
