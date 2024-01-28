@@ -2,17 +2,20 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-
-<form method="POST">
-    {{ form.hidden_tag() }} {% for field in form if field.widget.input_type
-    !='hidden'%}
-    <div class="form-group">
-      {{field.label}} {{field(class_='form-control')}} {% for err in
-      field.errors%}
-      <small class="form-text text-danger"> {{err}} </small>
-      {% endfor %} {% endfor %}
-    </div>
-    <button class="btn btn-success">Login</button>
-  </form>
+<div class="row align-items-center justify-content-center m-5">
+  <div class="col col-3">
+    <form method="POST" class="mt-5">
+      {{ form.hidden_tag() }} {% for field in form if field.widget.input_type
+      !='hidden'%}
+      <div class="form-group">
+        {{field.label}} {{field(class_='form-control')}} {% for err in
+        field.errors%}
+        <small class="form-text text-danger"> {{err}} </small>
+        {% endfor %} {% endfor %}
+      </div>
+      <button class="btn btn-success">Login</button>
+    </form>
+  </div>
+</div>
 
 {% endblock %}
