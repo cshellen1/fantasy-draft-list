@@ -2,6 +2,7 @@
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from datetime import datetime
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -81,6 +82,7 @@ class List(db.Model):
     sf_id = db.Column(db.Integer, default='strong forward')
     pf_id = db.Column(db.Integer, default='power forward')
     c_id = db.Column(db.Integer, default='center')
+    timestamp = db.Column( db.DateTime, nullable=False, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
     
     players = db.relationship('Player', secondary='player_lists', backref='lists')
@@ -111,6 +113,17 @@ class Player(db.Model):
     three_percent = db.Column(db.Float(3))
     minutes_played = db.Column(db.Integer)
     season = db.Column(db.Integer)
+    games_started = db.Column(db.Integer)
+    games_played = db.Column(db.Integer)
+    ftp = db.Column(db.Float(3))
+    stl = db.Column(db.Integer)
+    tov = db.Column(db.Integer)
+    orb = db.Column(db.Integer)
+    drb = db.Column(db.Integer)
+    trb = db.Column(db.Integer)
+    age = db.Column(db.Integer)
+    pf = db.Column(db.Integer)
+    
     
     def serialize(self):
         """method for serializing player objects"""

@@ -4,8 +4,10 @@ content %}
 <div class="row g-3 justify-content-center mt-4">
   {% for player in players %}
   <div class="col col-3 mx-1">
-    <div class="card text-bg-secondary" style="width: 18rem">
-      <h5 class="card-title text-center mt-2">{{player.name}}, {{player.team}}</h5>
+    <div class="card text-bg-secondary" style="width: 20rem">
+      <h5 class="card-title text-center mt-2">{{player.name}}, {{player.age}} y.o.<br>
+        {{player.team}}
+      </h5>
       <ul class="list-group list-group-flush">
         <li class="list-group-item">Total Points: {{player.points}}</li>
         {% if player.field_goal_percent is float %}
@@ -22,8 +24,22 @@ content %}
         {% else %}
           <li class="list-group-item">Three Point %: na</li>
         {% endif %}
+        {% if player.ftp is float %}
+          <li class="list-group-item">
+              Free Throw %: {{ (player.ftp*100)|round(2) }}
+          </li>
+        {% else %}
+          <li class="list-group-item">Free Throw %: na</li>
+        {% endif %}
         <li class="list-group-item">Blocks: {{player.blocks}}</li>
-        <li class="list-group-item">Assists: {{player.assists}}</li>
+        <li class="list-group-item">Steals: {{player.stl}}</li>
+        <li class="list-group-item">Personal Fouls: {{player.pf}}</li>
+        <li class="list-group-item">Games Played: {{player.games_played}}</li>
+        <li class="list-group-item">Games Started: {{player.games_started}}</li>
+        <li class="list-group-item">Turnovers: {{player.tov}}</li>
+        <li class="list-group-item">Offensive Rebounds: {{player.orb}}</li>
+        <li class="list-group-item">Defensive Rebounds: {{player.drb}}</li>
+        <li class="list-group-item">Total Rebounds: {{player.trb}}</li>
       </ul>
     </div>
   </div>

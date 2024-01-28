@@ -2,37 +2,78 @@
 
 <h1 class="text-center display-2 my-4 text-bg-primary">Draft Lists!</h1>
 <div class="row justify-content-center">
-  
-    <div class="card col-10 px-0">
-      <div class="card-body">
-        <p class="card-text text-center fw-medium fs-3">
-          Use last seasons stats to create next seasons fantasy draft list! Pick
-          players to compare and add them to your draft list. Save multiple
-          lists to your profile.
-        </p>
-      </div>
-      {% if not session["USER_ID"] %}
-        <p class="text-center fs-3">
-          <a href="/register"
-            class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Register</a>
-        </p>
-      {% endif %}
-      <img src="https://media.istockphoto.com/id/1551914538/photo/basketball-court-on-3d-illustration.jpg?s=1024x1024&w=is&k=20&c=CTyr6-6K1Ao_ISchV5uTzOYWNUZoGuywMeAv_Dzvfjc=" class="card-img-top" alt="picture of fan filled stadium"/>
+
+  <div class="card col-10 px-0">
+    <div class="card-body">
+      <p class="card-text text-center fw-medium fs-3">
+        Use last season's stats to create next season's fantasy draft list! Pick
+        players to compare and add them to your draft list. Save multiple
+        lists to your profile.
+      </p>
     </div>
-  
+    {% if not session["USER_ID"] %}
+    <p class="text-center fs-3">
+      <a href="/register"
+        class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Register</a>
+    </p>
+    {% endif %}
+    <img
+      src="https://media.istockphoto.com/id/1551914538/photo/basketball-court-on-3d-illustration.jpg?s=1024x1024&w=is&k=20&c=CTyr6-6K1Ao_ISchV5uTzOYWNUZoGuywMeAv_Dzvfjc="
+      class="card-img-top" alt="picture of fan filled stadium" />
+  </div>
+
 </div>
 {% if lists %}
 <div class="row g-3 justify-content-center mt-2">
   {% for list in lists %}
   <div class="col-md-auto">
-    <div class="card text-bg-secondary" style="width: 18rem">
-      <h5 class="card-title text-center mt-2">{{ list.name }}</h5>
-      <p class="text-center">user: {{ list.user.username }}</p>
-      <ul class="list-group list-group-flush">
-        {% for player in list.players %}
-        <li class="list-group-item">{{ player.name }}</li>
-        {% endfor %}
+    <div class="card" style="width: 25rem">
+      <h5 class="card-title text-bg-secondary text-center m-0 p-2">{{ list.name }}</h5>
+      <p class="text-center text-bg-secondary m-0 p-1">user: {{ list.user.username }}
+      </p>
+      {% for player in list.players %}
+      {% if player.id == list.pg_id %}
+      <ul class="list-group list-group-horizontal border-0">
+        <li class="list-group-item flex-fill w-25 border-0">Point Guard:</li>
+        <li class="list-group-item flex-fill w-50 border-0 text-center"><button type="button"
+            class="btn btn-sm btn-info btn-link" data-bs-toggle="popover" data-bs-title="Stats"
+            data-bs-content="Assists: {{ player.assists }}, Blocks: {{ player.blocks }}, Points: {{ player.points }}, Minutes Played: {{ player.minutes_played }}">
+            {{ player.name }}</button></li>
       </ul>
+      {% elif player.id == list.sg_id %}
+      <ul class="list-group list-group-horizontal border-0">
+        <li class="list-group-item flex-fill w-25 border-0">Strong Guard:</li>
+        <li class="list-group-item flex-fill w-50 border-0 text-center"><button type="button"
+            class="btn btn-sm btn-info btn-link" data-bs-toggle="popover" data-bs-title="Stats"
+            data-bs-content="Assists: {{ player.assists }}, Blocks: {{ player.blocks }}, Points: {{ player.points }}, Minutes Played: {{ player.minutes_played }}">
+            {{ player.name }}</button></li>
+      </ul>
+      {% elif player.id == list.sf_id %}
+      <ul class="list-group list-group-horizontal border-0">
+        <li class="list-group-item flex-fill w-25 border-0">Small Forward:</li>
+        <li class="list-group-item flex-fill w-50 border-0 text-center"><button type="button"
+            class="btn btn-sm btn-info btn-link" data-bs-toggle="popover" data-bs-title="Stats"
+            data-bs-content="Assists: {{ player.assists }}, Blocks: {{ player.blocks }}, Points: {{ player.points }}, Minutes Played: {{ player.minutes_played }}">
+            {{ player.name }}</button></li>
+      </ul>
+      {% elif player.id == list.pf_id %}
+      <ul class="list-group list-group-horizontal border-0">
+        <li class="list-group-item flex-fill w-25 border-0">Power Forward:</li>
+        <li class="list-group-item flex-fill w-50 border-0 text-center"><button type="button"
+            class="btn btn-sm btn-info btn-link" data-bs-toggle="popover" data-bs-title="Stats"
+            data-bs-content="Assists: {{ player.assists }}, Blocks: {{ player.blocks }}, Points: {{ player.points }}, Minutes Played: {{ player.minutes_played }}">
+            {{ player.name }}</button></li>
+      </ul>
+      {% elif player.id == list.c_id %}
+      <ul class="list-group list-group-horizontal border-0">
+        <li class="list-group-item flex-fill w-25 border-0">Center:</li>
+        <li class="list-group-item flex-fill w-50 border-0 text-center"><button type="button"
+            class="btn btn-sm btn-info btn-link" data-bs-toggle="popover" data-bs-title="Stats"
+            data-bs-content="Assists: {{ player.assists }}, Blocks: {{ player.blocks }}, Points: {{ player.points }}, Minutes Played: {{ player.minutes_played }}">
+            {{ player.name }}</button></li>
+      </ul>
+      {% endif %}
+      {% endfor %}
     </div>
   </div>
   {% endfor %}

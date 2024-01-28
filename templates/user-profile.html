@@ -9,14 +9,49 @@
 <div class="row g-3 justify-content-center">
   {% for list in lists %}
   <div class="col-md-auto">
-    <div class="card text-bg-secondary" style="width: 18rem">
-      <h5 class="card-title text-center mt-2">{{ list.name }}</h5>
-      <ul class="list-group list-group-flush">
-        {% for player in list.players %}
-        <li class="list-group-item">{{ player.name }}</li>
-        {% endfor %}
-        <li class="list-group-item"><a href="/list/{{ list.id }}/delete">Delete</a></li>
+    <div class="card" style="width: 25rem">
+      <h5 class="card-title text-bg-secondary text-center p-2">{{ list.name }}</h5>
+      <p class="text-center fw-lighter">created: {{ list.timestamp.strftime("%a. %b. %d, %Y") }}
+      </p>
+      {% for player in list.players %}
+      {% if player.id == list.pg_id %}
+      <ul class="list-group list-group-horizontal border-0">
+        <li class="list-group-item flex-fill w-25 border-0">Point Guard:</li>
+        <li class="list-group-item flex-fill w-50 border-0 text-center"><button type="button" class="btn btn-sm btn-info btn-link" data-bs-toggle="popover" data-bs-title="Stats"
+            data-bs-content="Assists: {{ player.assists }}, Blocks: {{ player.blocks }}, Points: {{ player.points }}, Minutes Played: {{ player.minutes_played }}">
+            {{ player.name }}</button></li>
       </ul>
+      {% elif player.id == list.sg_id %}
+      <ul class="list-group list-group-horizontal border-0">
+        <li class="list-group-item flex-fill w-25 border-0">Strong Guard:</li>
+        <li class="list-group-item flex-fill w-50 border-0 text-center"><button type="button" class="btn btn-sm btn-info btn-link" data-bs-toggle="popover" data-bs-title="Stats"
+          data-bs-content="Assists: {{ player.assists }}, Blocks: {{ player.blocks }}, Points: {{ player.points }}, Minutes Played: {{ player.minutes_played }}">
+          {{ player.name }}</button></li>
+      </ul>
+      {% elif player.id == list.sf_id %}
+      <ul class="list-group list-group-horizontal border-0">
+        <li class="list-group-item flex-fill w-25 border-0">Small Forward:</li>
+        <li class="list-group-item flex-fill w-50 border-0 text-center"><button type="button" class="btn btn-sm btn-info btn-link" data-bs-toggle="popover" data-bs-title="Stats"
+          data-bs-content="Assists: {{ player.assists }}, Blocks: {{ player.blocks }}, Points: {{ player.points }}, Minutes Played: {{ player.minutes_played }}">
+          {{ player.name }}</button></li>
+      </ul>
+      {% elif player.id == list.pf_id %}
+      <ul class="list-group list-group-horizontal border-0">
+        <li class="list-group-item flex-fill w-25 border-0">Power Forward:</li>
+        <li class="list-group-item flex-fill w-50 border-0 text-center"><button type="button" class="btn btn-sm btn-info btn-link" data-bs-toggle="popover" data-bs-title="Stats"
+          data-bs-content="Assists: {{ player.assists }}, Blocks: {{ player.blocks }}, Points: {{ player.points }}, Minutes Played: {{ player.minutes_played }}">
+          {{ player.name }}</button></li>
+      </ul>
+      {% elif player.id == list.c_id %}
+      <ul class="list-group list-group-horizontal border-0">
+        <li class="list-group-item flex-fill w-25 border-0">Center:</li>
+        <li class="list-group-item flex-fill w-50 border-0 text-center"><button type="button" class="btn btn-sm btn-info btn-link" data-bs-toggle="popover" data-bs-title="Stats"
+          data-bs-content="Assists: {{ player.assists }}, Blocks: {{ player.blocks }}, Points: {{ player.points }}, Minutes Played: {{ player.minutes_played }}">
+          {{ player.name }}</button></li>
+      </ul>
+      {% endif %}
+      {% endfor %}
+      <a href="/list/{{ list.id }}/delete" class="btn btn-danger">Delete</a></li>
     </div>
   </div>
   {% endfor %}

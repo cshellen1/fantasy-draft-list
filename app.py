@@ -41,7 +41,17 @@ def make_dbplayers(players):
             field_goal_percent=player['field_percent'],
             three_percent=player['three_percent'],
             minutes_played=player['minutes_played'],
-            season=player['season'])
+            season=player['season'],
+            games_started=player['games_started'],
+            games_played=player['games'],
+            ftp=player['ft_percent'],
+            stl=player['STL'],
+            tov=player['TOV'],
+            orb=player['ORB'],
+            drb=player['DRB'],
+            trb=player['TRB'],
+            age=player['age'],
+            pf=player['PF'])
         
         db.session.add(dbplayer)
 
