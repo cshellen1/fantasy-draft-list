@@ -11,15 +11,17 @@ class unaccent(ReturnTypeFromArgs):
     pass
 
 app = Flask(__name__)
+# Get DB_URI from environ variable (useful for production/testing) or,
+# if not set there, use development local db.
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     "DATABASE_URL", 'postgresql:///fantasy-listdb')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = False
 app.config['SECRET_KEY'] = "iliketrucks12345"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
-# connect_db needs to be commented out for testing. So that when the app is initiallized the configuration changes for testing will be read.
+
 connect_db(app)
 
 def run_login(user):
@@ -104,8 +106,12 @@ def data_check():
     elif curr_date.year > db.session.query(Player.season).first()[0]:
         update_player_data()
         return
-    
-data_check()
+   
+
+if not os.environ["FLASK_ENV"] == "testing":
+    print("**********Data check performed***********")
+    data_check()
+
 
 def authorization_check():
     """check to see if the user is logged in by looking for the USER_ID in the session"""
@@ -311,7 +317,7 @@ def compare_players():
 
 ####################### list routes ############################
 
-@app.route("/list/<int:id>/delete")
+@app.route("/list/<int:id>/delete", methods=["DELETE"])
 def delete_draftlist(id):
     """Delete player list"""
     

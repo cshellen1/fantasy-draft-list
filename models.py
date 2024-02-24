@@ -3,9 +3,12 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from datetime import datetime
+from sqlalchemy import MetaData
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
+metadata = MetaData()
+
 
 
 def connect_db(app):
@@ -15,6 +18,10 @@ def connect_db(app):
     app.app_context().push()
     return app
 
+def drop_all_tables():
+    """method for dropping all existing tables in the database"""
+    metadata.reflect(bind=db.engine)
+    metadata.drop_all(bind=db.engine, checkfirst=True)
 
 class User(db.Model):
     """users model"""

@@ -1,22 +1,19 @@
 """tests for user views"""
-
+import os
 import pdb
 from unittest import TestCase
-from models import db, User, List, connect_db 
-from app import app
+from models import db, User, List, connect_db, drop_all_tables  
 from flask import session
 
+# change eviromental variable for testing_database before importing the app
+os.environ["DATABASE_URL"] = "postgresql:///fantasy-list-testdb"
+# change flask environmental variable so data_check() is not performed in main app and data from api is not added to the test database.
+os.environ["FLASK_ENV"] = "testing"
 # configuration changes for testing
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///fantasy-list-testdb'
+from app import app
 app.config['WTF_CSRF_ENABLED'] = False
-app.config['TESTING'] = True
-app.config['SQLALCHEMY_ECHO'] = False
-app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
-# connect_db has to be commented out in the app.py before running the test file. So that when the app is initiallized the configuration changes will be read. 
-# connect_db(app)
-
-db.drop_all()
+drop_all_tables()
 db.create_all()
 
 class UserViewTestCase(TestCase):

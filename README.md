@@ -11,4 +11,9 @@ The technologies used for this application include HTML, CSS, Javascript, jQuery
 ## Third party API
 This applictaion uses a third party API for the source of all the player stats. The API in use is NBA Stats API v1.1. 
 
+## Testing
+The tests for this app can be run from the command line using `python -m unittest <TEST-FILE-NAME>`. Two test files are included in the repository.
+    - test-player-views.py
+    - test-user-views.py
+
 [NBA Stats API](https://documenter.getpostman.com/view/24232555/2s93shzpR3?ref=apilist.fun)

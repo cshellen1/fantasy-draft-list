@@ -1,22 +1,23 @@
 """tests for player views"""
 
+import os
+
 import pdb
 from unittest import TestCase
-from models import db, Player, connect_db, User, List 
-from app import app
+from models import db, Player, connect_db, User, List, drop_all_tables 
 from flask import session, jsonify
 
+# change eviromental variable for testing_database before importing the app
+os.environ["DATABASE_URL"] = "postgresql:///fantasy-list-testdb"
+# change flask environmental variable so data_check() is not performed in main app and data from api is not added to the test database.
+os.environ["FLASK_ENV"] = "testing"
+
+from app import app
 # configuration changes for testing
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///fantasy-list-testdb'
+
 app.config['WTF_CSRF_ENABLED'] = False
-app.config['TESTING'] = True
-app.config['SQLALCHEMY_ECHO'] = False
-app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
-# connect_db has to be commented out in the app.py before running the test file. So that when the app is initiallized the configuration changes will be read. 
-# connect_db(app)
-
-db.drop_all()
+drop_all_tables()
 db.create_all()
 
 class PlayerViewTestCase(TestCase):
@@ -24,9 +25,6 @@ class PlayerViewTestCase(TestCase):
     
     def setUp(self):
         """create test cleint and add sample data"""
-        
-        User.query.delete()
-        Player.query.delete()
 
         self.client = app.test_client()
         
@@ -37,7 +35,19 @@ class PlayerViewTestCase(TestCase):
                         blocks=200,
                         field_goal_percent=0.53,
                         three_percent=0.43,
-                        minutes_played=300)
+                        minutes_played=300,
+                        season=2023, 
+                        games_started=50, 
+                        games_played= 45,
+                        ftp=0.80, 
+                        stl=15, 
+                        tov=2, 
+                        orb=20,
+                        drb=5,
+                        trb=25,
+                        age=22, 
+                        pf=5)
+     
         
         player2 = Player(name="name2",
                         team="team2",
@@ -46,7 +56,18 @@ class PlayerViewTestCase(TestCase):
                         blocks=500,
                         field_goal_percent=0.80,
                         three_percent=0.70,
-                        minutes_played=500)
+                        minutes_played=500,
+                        season=2023, 
+                        games_started=50, 
+                        games_played= 45,
+                        ftp=0.80, 
+                        stl=15, 
+                        tov=2, 
+                        orb=20,
+                        drb=5,
+                        trb=25,
+                        age=22, 
+                        pf=5)
         
         player3 = Player(name="name3",
                         team="team3",
@@ -55,7 +76,18 @@ class PlayerViewTestCase(TestCase):
                         blocks=500,
                         field_goal_percent=0.80,
                         three_percent=0.70,
-                        minutes_played=500)
+                        minutes_played=500,
+                        season=2023, 
+                        games_started=50, 
+                        games_played= 45,
+                        ftp=0.80, 
+                        stl=15, 
+                        tov=2, 
+                        orb=20,
+                        drb=5,
+                        trb=25,
+                        age=22, 
+                        pf=5)
         
         player4 = Player(name="name4",
                         team="team4",
@@ -64,7 +96,18 @@ class PlayerViewTestCase(TestCase):
                         blocks=500,
                         field_goal_percent=0.80,
                         three_percent=0.70,
-                        minutes_played=500)
+                        minutes_played=500,
+                        season=2023, 
+                        games_started=50, 
+                        games_played= 45,
+                        ftp=0.80, 
+                        stl=15, 
+                        tov=2, 
+                        orb=20,
+                        drb=5,
+                        trb=25,
+                        age=22, 
+                        pf=5)
         
         player5 = Player(name="name5",
                         team="team5",
@@ -73,7 +116,18 @@ class PlayerViewTestCase(TestCase):
                         blocks=500,
                         field_goal_percent=0.80,
                         three_percent=0.70,
-                        minutes_played=500)
+                        minutes_played=500,
+                        season=2023, 
+                        games_started=50, 
+                        games_played= 45,
+                        ftp=0.80, 
+                        stl=15, 
+                        tov=2, 
+                        orb=20,
+                        drb=5,
+                        trb=25,
+                        age=22, 
+                        pf=5)
         
         testuser = User.register(username="testuser",
                                     email="test@test.com",
@@ -96,6 +150,12 @@ class PlayerViewTestCase(TestCase):
         self.player5 = player5
         self.testuser = testuser
         
+    def tearDown(self):
+        
+        User.query.delete()
+        Player.query.delete()
+        List.query.delete()
+        
     def test_comparison_player_search(self):
         """test that two players data are returned from a comparison search in json form for the dom manipulation in the js file"""
         
@@ -111,7 +171,7 @@ class PlayerViewTestCase(TestCase):
         self.assertEqual(resp.status_code, 201)
         
     def test_single_player_search(self):
-        """test that an when an individual player search displays the player data when a user is signed in""" 
+        """test an individual player search displays the player data when a user is signed in""" 
         
         with self.client.session_transaction() as sess:
             sess['USER_ID'] = self.testuser.id
@@ -120,7 +180,7 @@ class PlayerViewTestCase(TestCase):
         html = resp.text
         
         self.assertEqual(resp.status_code, 200)
-        self.assertIn(f'<li class="list-group-item">{self.player1.name} {self.player1.team}</li>', html)
+        self.assertIn(f'<h5 class="card-title text-center mt-2">{self.player1.name}, {self.player1.age} y.o.<br>', html)
            
     def test_player_search(self):
         """test that when a player search is performed with a misspelled/invalid name that a message is displayed telling the user to check spelling or indicate theres no data for the player"""
@@ -154,7 +214,8 @@ class PlayerViewTestCase(TestCase):
         with self.client.session_transaction() as sess:
             sess['USER_ID'] = self.testuser.id
             
-        d = {"point_guard": "name1",
+        d = {"name": "test_list",
+             "point_guard": "name1",
              "strong_guard": "name2",
              "small_forward": "name3",
              "power_forward": "name4",
@@ -173,20 +234,21 @@ class PlayerViewTestCase(TestCase):
         with self.client.session_transaction() as sess:
             sess['USER_ID'] = self.testuser.id
             
-        test_list = List(pg_id=1,
-             sg_id=2,
-             sf_id=3,
-             pf_id=4,
-             c_id=5,
-             user_id=self.testuser.id)
+        test_list = List(
+            name="test_list",
+            pg_id=1,
+            sg_id=2,
+            sf_id=3,
+            pf_id=4,
+            c_id=5,
+            user_id=self.testuser.id)
         
         db.session.add(test_list)
         db.session.commit() 
         
         resp = self.client.delete(f"/list/{self.testuser.lists[0].id}/delete")
         html = resp.text
-        
-        
+    
         self.assertEqual(resp.status_code, 302)
         self.assertFalse(self.testuser.lists)
         self.assertIn(f'<a href="/user/{self.testuser.id}/details">/user/{self.testuser.id}/details</a>', html)
