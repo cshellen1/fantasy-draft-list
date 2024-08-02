@@ -9,6 +9,9 @@ bcrypt = Bcrypt()
 db = SQLAlchemy()
 metadata = MetaData()
 
+class UserRegistrationError(Exception):
+    """Custom exception for user registration errors."""
+    pass
 
 
 def connect_db(app):
@@ -18,15 +21,17 @@ def connect_db(app):
     app.app_context().push()
     return app
 
+
 def drop_all_tables():
     """method for dropping all existing tables in the database"""
     metadata.reflect(bind=db.engine)
     metadata.drop_all(bind=db.engine, checkfirst=True)
 
+
 class User(db.Model):
     """users model"""
 
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     def __repr__(self):
         u = self
@@ -39,23 +44,31 @@ class User(db.Model):
     username = db.Column(db.String(50), nullable=False, unique=True)
     email = db.Column(db.String(75), nullable=False, unique=True)
 
-    lists = db.relationship('List', backref='user', cascade='all, delete-orphan')
+    lists = db.relationship("List", backref="user", cascade="all, delete-orphan")
 
     @classmethod
     def register(cls, username, password, first_name, last_name, email):
         """register user with hashed password and return user"""
+    # turn password into a hashed password
+        try:
+            hashed = bcrypt.generate_password_hash(password)
+            # turn bytestring into normal (unicode utf8) string
+            hashed_utf8 = hashed.decode("utf8")
 
-        hashed = bcrypt.generate_password_hash(password)
-        # turn bytestring into normal (unicode utf8) string
-        hashed_utf8 = hashed.decode("utf8")
-
-        return cls(
-            username=username,
-            password=hashed_utf8,
-            first_name=first_name,
-            last_name=last_name,
-            email=email
-        )
+            new_user =  cls(
+                username=username,
+                password=hashed_utf8,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            return new_user
+        except Exception as e:
+            db.session.rollback()  
+            print(f"Error: {e.args[0]}")
+            raise UserRegistrationError(f"Error registering user: {str(e.args[0])}")
 
     @classmethod
     def authenticate(cls, username, password):
@@ -80,36 +93,37 @@ class List(db.Model):
     players stored as their id
     """
 
-    __tablename__ = 'lists'
+    __tablename__ = "lists"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(20), nullable=False)
-    pg_id = db.Column(db.Integer, default='point guard')
-    sg_id = db.Column(db.Integer, default='shooting guard')
-    sf_id = db.Column(db.Integer, default='strong forward')
-    pf_id = db.Column(db.Integer, default='power forward')
-    c_id = db.Column(db.Integer, default='center')
-    timestamp = db.Column( db.DateTime, nullable=False, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
-    
-    players = db.relationship('Player', secondary='player_lists', backref='lists')
-    
+    pg_id = db.Column(db.Integer, default="point guard")
+    sg_id = db.Column(db.Integer, default="shooting guard")
+    sf_id = db.Column(db.Integer, default="strong forward")
+    pf_id = db.Column(db.Integer, default="power forward")
+    c_id = db.Column(db.Integer, default="center")
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
+
+    players = db.relationship("Player", secondary="player_lists", backref="lists")
+
     def add_to_playerlists(self):
         """add the player id and associated list id to playerlists table in order to use defined relationships"""
-        
+
         id_list = [self.pg_id, self.sg_id, self.sf_id, self.pf_id, self.c_id]
-        
+
         for id in id_list:
             pl = PlayerList(player_id=id, list_id=self.id)
             db.session.add(pl)
-        
+
         db.session.commit()
-    
+
+
 class Player(db.Model):
     """Table for all the players in the"""
-    
-    __tablename__ = 'players'
-    
+
+    __tablename__ = "players"
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
     team = db.Column(db.String(50), nullable=False)
@@ -130,26 +144,30 @@ class Player(db.Model):
     trb = db.Column(db.Integer)
     age = db.Column(db.Integer)
     pf = db.Column(db.Integer)
-    
-    
+
     def serialize(self):
         """method for serializing player objects"""
         return {
-            'id': self.id,
-            'name': self.name,
-            'team': self.team,
-            'points': self.points,
-            'assists': self.assists,
-            'blocks': self.blocks,
-            'field_goal_percent': self.field_goal_percent,
-            'three_percent': self.three_percent,
-            'minutes_played': self.minutes_played
+            "id": self.id,
+            "name": self.name,
+            "team": self.team,
+            "points": self.points,
+            "assists": self.assists,
+            "blocks": self.blocks,
+            "field_goal_percent": self.field_goal_percent,
+            "three_percent": self.three_percent,
+            "minutes_played": self.minutes_played,
         }
-        
+
+
 class PlayerList(db.Model):
     """Player List model"""
-    
-    __tablename__ = 'player_lists'
-    
-    player_id = db.Column(db.Integer, db.ForeignKey('players.id', ondelete='CASCADE'), primary_key=True)
-    list_id = db.Column(db.Integer, db.ForeignKey('lists.id', ondelete='CASCADE'), primary_key=True)
+
+    __tablename__ = "player_lists"
+
+    player_id = db.Column(
+        db.Integer, db.ForeignKey("players.id", ondelete="CASCADE"), primary_key=True
+    )
+    list_id = db.Column(
+        db.Integer, db.ForeignKey("lists.id", ondelete="CASCADE"), primary_key=True
+    )
